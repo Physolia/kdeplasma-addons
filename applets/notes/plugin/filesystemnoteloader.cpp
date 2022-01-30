@@ -51,7 +51,14 @@ Note *FileSystemNoteLoader::loadNote(const QString &id)
 {
     QString idToUse = id;
     if (id.isEmpty()) {
-        idToUse = QUuid::createUuid().toString().mid(1, 34); // UUID adds random braces I don't want them on my file system
+        // Some file systems don't like braces in file names.
+        idToUse = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    } else if (QUuid::fromString(idToUse).isNull()) {
+        // Migration path for notes created by an old code which had a bug
+        // that stripped last two chars of UUID.
+        QFile file(m_notesDir.absoluteFilePath(idToUse));
+        idToUse = QUuid::createUuid().toString(QUuid::WithoutBraces);
+        file.rename(m_notesDir.absoluteFilePath(idToUse));
     }
 
     FileNote *note = new FileNote(m_notesDir.absoluteFilePath(idToUse), idToUse);

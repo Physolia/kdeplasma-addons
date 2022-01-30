@@ -13,6 +13,9 @@
 class Note : public QObject
 {
     Q_OBJECT
+    // ID looks like a UUID with dashed and without braces. But due to an old
+    // bug (2014-2022), the last two hex digits(one octet) of UUID were being
+    // stripped away, so it is only safe to treat is as a generic string.
     Q_PROPERTY(QString id READ id CONSTANT)
     Q_PROPERTY(QString noteText READ noteText NOTIFY noteTextChanged)
 

@@ -46,7 +46,8 @@ PlasmaCore.SvgItem {
     readonly property real horizontalMargins: width * 0.07
     readonly property real verticalMargins: height * 0.07
 
-    property Note note: noteManager.loadNote(plasmoid.configuration.noteId);
+    // initialized imperatively by the manager to avoid binding loops on noteId
+    property Note note: null
 
     // define colors used for icons in ToolButtons and for text in TextArea.
     // this is deliberately _NOT_ the theme color as we are over a known bright background!
@@ -90,6 +91,17 @@ PlasmaCore.SvgItem {
 
     NoteManager {
         id: noteManager
+
+        Component.onCompleted: {
+            const note = loadNote(plasmoid.configuration.noteId);
+
+            // Manager could've returned a note with a different ID
+            if (note.id !== plasmoid.configuration.noteId) {
+                plasmoid.configuration.noteId = note.id;
+            }
+
+            root.note = note;
+        }
     }
 
     Plasmoid.compactRepresentation: DragDrop.DropArea {
@@ -154,7 +166,7 @@ PlasmaCore.SvgItem {
 
                 textFormat: TextEdit.RichText
                 onLinkActivated: Qt.openUrlExternally(link)
-                background: Rectangle { color: "transparent" }
+                background: null
                 color: textIconColor
                 persistentSelection: true
                 wrapMode: TextEdit.Wrap
@@ -203,8 +215,8 @@ PlasmaCore.SvgItem {
                 Binding {
                     target: mainTextArea
                     property: "text"
-                    value: note.noteText
-                    when: !mainTextArea.activeFocus
+                    value: root.note.noteText
+                    when: !mainTextArea.activeFocus && root.note !== null
                     // don't restore an empty value (which IS empty by default when the applet starts up),
                     // instead only remove this binding for the time when the user edits the content.
                     restoreMode: Binding.RestoreBinding
@@ -215,7 +227,7 @@ PlasmaCore.SvgItem {
                         plasmoid.status = PlasmaCore.Types.AcceptingInputStatus
                     } else {
                         plasmoid.status = PlasmaCore.Types.ActiveStatus
-                        note.save(mainTextArea.text);
+                        root.note.save(mainTextArea.text);
                     }
                 }
 
@@ -526,12 +538,6 @@ PlasmaCore.SvgItem {
         plasmoid.setAction("change_note_color_translucent", i18nc("@item:inmenu", "Translucent"));
         plasmoid.setAction("change_note_color_translucent-light", i18nc("@item:inmenu", "Translucent Light"));
         plasmoid.setActionSeparator("separator0");
-
-        // plasmoid configuration doesn't check before emitting change signal
-        // explicit check is needed (at time of writing)
-        if (note.id != plasmoid.configuration.noteId) {
-            plasmoid.configuration.noteId = note.id;
-        }
     }
 
     Component.onDestruction: {
