@@ -46,8 +46,7 @@ PlasmaCore.SvgItem {
     readonly property real horizontalMargins: width * 0.07
     readonly property real verticalMargins: height * 0.07
 
-    // note is of type Note
-    property QtObject note: noteManager.loadNote(plasmoid.configuration.noteId);
+    property Note note: noteManager.loadNote(plasmoid.configuration.noteId);
 
     // define colors used for icons in ToolButtons and for text in TextArea.
     // this is deliberately _NOT_ the theme color as we are over a known bright background!
