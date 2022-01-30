@@ -155,7 +155,7 @@ void DocumentHandler::setSelectionEnd(int position)
 void DocumentHandler::setAlignment(Qt::Alignment a)
 {
     QTextBlockFormat fmt;
-    fmt.setAlignment((Qt::Alignment)a);
+    fmt.setAlignment(a);
     QTextCursor cursor = QTextCursor(m_doc);
     cursor.setPosition(m_selectionStart, QTextCursor::MoveAnchor);
     cursor.setPosition(m_selectionEnd, QTextCursor::KeepAnchor);
