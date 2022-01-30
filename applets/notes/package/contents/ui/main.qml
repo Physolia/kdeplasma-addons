@@ -327,15 +327,18 @@ PlasmaCore.SvgItem {
                     const content = scrollview.contentItem;
                     return content instanceof Flickable ? content : null;
                 }
+                textArea: mainTextArea
 
                 onSave: {
                     plasmoid.configuration.scrollX = x;
                     plasmoid.configuration.scrollY = y;
+                    plasmoid.configuration.cursorPosition = cursorPosition;
                 }
 
                 onRestore: {
                     x = plasmoid.configuration.scrollX;
                     y = plasmoid.configuration.scrollY;
+                    cursorPosition = plasmoid.configuration.cursorPosition;
                 }
             }
         }
