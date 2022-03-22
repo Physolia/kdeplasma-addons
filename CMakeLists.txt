@@ -75,8 +75,8 @@ add_definitions(
 )
 
 add_subdirectory(dict)
+add_subdirectory(profiles)
 add_subdirectory(applets)
-add_subdirectory(dataengines)
 add_subdirectory(runners)
 
 add_subdirectory(wallpapers)
